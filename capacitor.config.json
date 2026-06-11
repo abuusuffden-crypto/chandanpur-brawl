@@ -1,0 +1,9 @@
+{
+  "appId": "com.abu.chandanpurbrawl",
+  "appName": "Chandanpur Brawl",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0E0A18",
+    "allowMixedContent": false
+  }
+}

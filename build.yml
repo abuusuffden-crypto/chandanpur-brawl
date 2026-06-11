@@ -1,0 +1,53 @@
+name: Build Chandanpur Brawl APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          cp index.html www/
+
+      - name: Install Capacitor
+        run: npm install
+
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: Generate app icon
+        run: |
+          mkdir -p assets
+          cp icon.png assets/logo.png
+          npx --yes @capacitor/assets generate --android || echo "icon step skipped"
+          npx cap sync android || true
+
+      - name: Build the APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload the APK for download
+        uses: actions/upload-artifact@v4
+        with:
+          name: chandanpur-brawl-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
